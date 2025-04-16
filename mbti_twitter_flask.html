@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBTI Personality Predictor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            background-color: #f5f5f5;
+            transition: background 1s ease-in-out;
+        }
+        .container {
+            max-width: 500px;
+            margin: 80px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out;
+        }
+        .container:hover {
+            transform: scale(1.02);
+        }
+        h1 { font-weight: 600; color: #333; }
+        input {
+            width: 80%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 12px 18px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover { background-color: #0056b3; }
+        #result { margin-top: 20px; padding: 20px; border-radius: 8px; font-size: 18px; font-weight: 500; }
+        #chart-container { margin-top: 20px; }
+    </style>
+</head>
+<body onload="changeBackground('{{ personality }}')">
+
+    <div class="container">
+        <h1>🔍 MBTI Personality Predictor</h1>
+        <form action="/predict" method="post">
+            <input type="text" name="username" placeholder="Enter Twitter username" value="{{ username }}">
+            <button type="submit">🔮 Predict Personality</button>
+        </form>
+        
+        {% if personality %}
+            <div id="result">
+                <h2>Personality Predicted: {{ personality }}</h2>
+                <p>{{ description }}</p>
+            </div>
+            <div id="chart-container">
+                <canvas id="mbtiChart" width="400" height="400"></canvas>
+            </div>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+            function showChart(personality) {
+                const skills = {
+                    "INTJ": { "Creativity": 20, "Leadership": 25, "Communication": 15, "Analytical Thinking": 30, "Problem-Solving": 10 },
+                    "ENTP": { "Creativity": 30, "Leadership": 20, "Communication": 25, "Analytical Thinking": 15, "Problem-Solving": 10 },
+                    "INFJ": { "Creativity": 25, "Leadership": 15, "Communication": 20, "Analytical Thinking": 20, "Problem-Solving": 20 },
+                    "ENFP": { "Creativity": 35, "Leadership": 10, "Communication": 30, "Analytical Thinking": 15, "Problem-Solving": 10 },
+                    "ISTP": { "Creativity": 15, "Leadership": 10, "Communication": 10, "Analytical Thinking": 40, "Problem-Solving": 25 },
+                    "ESFP": { "Creativity": 30, "Leadership": 15, "Communication": 30, "Analytical Thinking": 10, "Problem-Solving": 15 },
+                    "INTP": { "Creativity": 40, "Leadership": 10, "Communication": 10, "Analytical Thinking": 30, "Problem-Solving": 10 },
+                    "ENTJ": { "Creativity": 20, "Leadership": 40, "Communication": 20, "Analytical Thinking": 10, "Problem-Solving": 10 },
+                    "ISFJ": { "Creativity": 15, "Leadership": 10, "Communication": 25, "Analytical Thinking": 30, "Problem-Solving": 20 },
+                    "ESTJ": { "Creativity": 10, "Leadership": 40, "Communication": 20, "Analytical Thinking": 20, "Problem-Solving": 10 },
+                    "ISTJ": { "Creativity": 10, "Leadership": 20, "Communication": 10, "Analytical Thinking": 30, "Problem-Solving": 30 },
+                    "ISFP": { "Creativity": 35, "Leadership": 10, "Communication": 20, "Analytical Thinking": 15, "Problem-Solving": 20 },
+                    "ESTP": { "Creativity": 25, "Leadership": 25, "Communication": 25, "Analytical Thinking": 15, "Problem-Solving": 10 },
+                    "ENFJ": { "Creativity": 20, "Leadership": 30, "Communication": 30, "Analytical Thinking": 10, "Problem-Solving": 10 },
+                    "INFP": { "Creativity": 40, "Leadership": 10, "Communication": 20, "Analytical Thinking": 15, "Problem-Solving": 15 },
+                    "ESFJ": { "Creativity": 15, "Leadership": 20, "Communication": 30, "Analytical Thinking": 10, "Problem-Solving": 25 }
+                };
+            
+                let skillData = skills[personality] || { "Creativity": 20, "Leadership": 20, "Communication": 20, "Analytical Thinking": 20, "Problem-Solving": 20 };
+            
+                let ctx = document.getElementById("mbtiChart").getContext("2d");
+                new Chart(ctx, {
+                    type: "pie",
+                    data: {
+                        labels: Object.keys(skillData),
+                        datasets: [{
+                            data: Object.values(skillData),
+                            backgroundColor: ["#ff6384", "#36a2eb", "#ffce56", "#4bc0c0", "#9966ff"]
+                        }]
+                    }
+                });
+            }
+            
+            function changeBackground(personalityType) {
+                const bgColors = {
+                    "INTJ": "#1e3d59",
+                    "ENTP": "#ff9800",
+                    "INFJ": "#7b1fa2",
+                    "ENFP": "#ff5722",
+                    "ISTP": "#4caf50",
+                    "ESFP": "#ff4081",
+                    "INTP": "#009688",
+                    "ENTJ": "#673ab7",
+                    "ISFJ": "#03a9f4",
+                    "ESTJ": "#d32f2f",
+                    "ISTJ": "#607d8b",
+                    "ISFP": "#795548",
+                    "ESTP": "#c2185b",
+                    "ENFJ": "#388e3c",
+                    "INFP": "#ffa000",
+                    "ESFJ": "#ffcc80"
+                };
+            
+                let selectedColor = bgColors[personalityType] || "#f5f5f5"; 
+                document.body.style.backgroundColor = selectedColor;
+            }
+            
+            function startCountdown(waitTime) {
+                let countdownElement = document.getElementById("countdown");
+                countdownElement.style.display = "block"; // Show countdown
+            
+                function updateTimer() {
+                    let minutes = Math.floor(waitTime / 60);
+                    let seconds = waitTime % 60;
+                    countdownElement.innerText = `⏳ Try again in ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                    
+                    if (waitTime > 0) {
+                        waitTime--;
+                        setTimeout(updateTimer, 1000);
+                    } else {
+                        countdownElement.innerText = "✅ You can try again now!";
+                        countdownElement.style.color = "green";
+                    }
+                }
+            
+                updateTimer();
+            }
+            
+            // Call functions if personality is detected
+            {% if personality %}
+                showChart("{{ personality }}");
+                changeBackground("{{ personality }}");
+            {% endif %}
+            
+            {% if wait_time %}
+                startCountdown({{ wait_time }});
+            {% endif %}
+            </script>
+            
+        {% endif %}
+    </div>
+</body>
+</html>
